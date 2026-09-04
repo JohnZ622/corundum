@@ -14,7 +14,7 @@ set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_200mhz_p]
 set_property PACKAGE_PIN AE5 [get_ports clk_200mhz_p]
 set_property PACKAGE_PIN AF5 [get_ports clk_200mhz_n]
 set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_200mhz_n]
-create_clock -period 5.000 -name clk_200mhz_p -waveform {0.000 2.500} [get_ports clk_200mhz_p]
+create_clock -period 5.000 -name clk_200mhz -waveform {0.000 2.500} [get_ports clk_200mhz_p]
 
 # LEDs
 set_property PACKAGE_PIN AE15 [get_ports {leds_tri_o[0]}]
