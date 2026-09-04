@@ -16,6 +16,8 @@ set_property PACKAGE_PIN AF5 [get_ports clk_200mhz_n]
 set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_200mhz_n]
 create_clock -period 5.000 -name clk_200mhz -waveform {0.000 2.500} [get_ports clk_200mhz_p]
 
+# TODO Si570
+
 # LEDs
 set_property PACKAGE_PIN AE15 [get_ports {leds_tri_o[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {leds_tri_o[0]}]
