@@ -1,8 +1,10 @@
 
 create_ip -name pcie4_uscale_plus -vendor xilinx.com -library ip -module_name pcie4_uscale_plus_0
 
+# Class code 020000 is Ethernet controller
+# device ID will be overriden
 set_property -dict [list \
-    CONFIG.PL_LINK_CAP_MAX_LINK_SPEED {8.0_GT/s} \ # PCIe 3.0 link
+    CONFIG.PL_LINK_CAP_MAX_LINK_SPEED {8.0_GT/s} \
     CONFIG.PL_LINK_CAP_MAX_LINK_WIDTH {X2} \
     CONFIG.AXISTEN_IF_RC_STRADDLE {false} \
     CONFIG.axisten_if_enable_client_tag {true} \
@@ -11,10 +13,10 @@ set_property -dict [list \
     CONFIG.pf0_dev_cap_max_payload {1024_bytes} \
     CONFIG.axisten_freq {250} \
     CONFIG.PF0_Use_Class_Code_Lookup_Assistant {false} \
-    CONFIG.PF0_CLASS_CODE {020000} \ # Ethernet network controller
-    CONFIG.PF0_DEVICE_ID {9032} \ # 9 is UltraScale+, 3 is Gen3, 2 ix x2 links
+    CONFIG.PF0_CLASS_CODE {020000} \
+    CONFIG.PF0_DEVICE_ID {9032} \
     CONFIG.PF0_SUBSYSTEM_ID {0007} \
-    CONFIG.PF0_SUBSYSTEM_VENDOR_ID {10ee} \ # Xilinx ID
+    CONFIG.PF0_SUBSYSTEM_VENDOR_ID {10ee} \
     CONFIG.pf0_bar0_64bit {true} \
     CONFIG.pf0_bar0_prefetchable {true} \
     CONFIG.pf0_bar0_scale {Megabytes} \
@@ -27,6 +29,6 @@ set_property -dict [list \
     CONFIG.PF0_MSIX_CAP_PBA_BIR {BAR_1:0} \
     CONFIG.PF0_MSIX_CAP_PBA_OFFSET {00018000} \
     CONFIG.MSI_X_OPTIONS {MSI-X_External} \
-    CONFIG.vendor_id {10ee} \ # Xilinx ID
+    CONFIG.vendor_id {10ee} \
     CONFIG.mode_selection {Advanced} \
 ] [get_ips pcie4_uscale_plus_0]
