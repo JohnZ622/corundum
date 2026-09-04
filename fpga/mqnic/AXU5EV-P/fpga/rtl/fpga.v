@@ -153,11 +153,6 @@ module fpga #
     /*
      * GPIO
      */
-    input  wire         btnu,
-    input  wire         btnl,
-    input  wire         btnd,
-    input  wire         btnr,
-    input  wire         btnc,
     input  wire [7:0]   sw,
     output wire [7:0]   led,
 
@@ -348,11 +343,6 @@ sync_reset_125mhz_inst (
 );
 
 // GPIO
-wire btnu_int;
-wire btnl_int;
-wire btnd_int;
-wire btnr_int;
-wire btnc_int;
 wire [7:0] sw_int;
 wire i2c1_scl_i;
 wire i2c1_scl_o;
@@ -374,25 +364,15 @@ always @(posedge pcie_user_clk) begin
 end
 
 debounce_switch #(
-    .WIDTH(13),
+    .WIDTH(8),
     .N(4),
     .RATE(250000)
 )
 debounce_switch_inst (
     .clk(pcie_user_clk),
     .rst(pcie_user_reset),
-    .in({btnu,
-        btnl,
-        btnd,
-        btnr,
-        btnc,
-        sw}),
-    .out({btnu_int,
-        btnl_int,
-        btnd_int,
-        btnr_int,
-        btnc_int,
-        sw_int})
+    .in(sw),
+    .out(sw_int)
 );
 
 sync_signal #(
@@ -1181,11 +1161,11 @@ core_inst (
     /*
      * GPIO
      */
-    .btnu(btnu_int),
-    .btnl(btnl_int),
-    .btnd(btnd_int),
-    .btnr(btnr_int),
-    .btnc(btnc_int),
+    .btnu(1'b0),
+    .btnl(1'b0),
+    .btnd(1'b0),
+    .btnr(1'b0),
+    .btnc(1'b0),
     .sw(sw_int),
     .led(led),
 
