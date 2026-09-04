@@ -17,17 +17,11 @@ set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_200mhz_n]
 create_clock -period 5.000 -name clk_200mhz_p -waveform {0.000 2.500} [get_ports clk_200mhz_p]
 
 # LEDs
-set_property -dict {LOC AL11 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[0]}]
-set_property -dict {LOC AL13 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[1]}]
-set_property -dict {LOC AK13 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[2]}]
-set_property -dict {LOC AE15 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[3]}]
-set_property -dict {LOC AM8  IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[4]}]
-set_property -dict {LOC AM9  IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[5]}]
-set_property -dict {LOC AM10 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[6]}]
-set_property -dict {LOC AM11 IOSTANDARD LVCMOS12 SLEW SLOW DRIVE 8} [get_ports {led[7]}]
+set_property PACKAGE_PIN AE15 [get_ports {leds_tri_o[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {leds_tri_o[0]}]
 
-set_false_path -to [get_ports {led[*]}]
-set_output_delay 0 [get_ports {led[*]}]
+set_false_path -to [get_ports {leds_tri_o[*]}]
+set_output_delay 0 [get_ports {leds_tri_o[*]}]
 
 # Reset button
 #set_property -dict {LOC G13  IOSTANDARD LVCMOS12} [get_ports reset]
