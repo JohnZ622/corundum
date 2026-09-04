@@ -153,7 +153,6 @@ module fpga #
     /*
      * GPIO
      */
-    input  wire [7:0]   sw,
     output wire [7:0]   led,
 
     /*
@@ -343,7 +342,6 @@ sync_reset_125mhz_inst (
 );
 
 // GPIO
-wire [7:0] sw_int;
 wire i2c1_scl_i;
 wire i2c1_scl_o;
 wire i2c1_scl_t;
@@ -362,18 +360,6 @@ always @(posedge pcie_user_clk) begin
     i2c1_sda_o_reg <= i2c1_sda_o;
     i2c1_sda_t_reg <= i2c1_sda_t;
 end
-
-debounce_switch #(
-    .WIDTH(8),
-    .N(4),
-    .RATE(250000)
-)
-debounce_switch_inst (
-    .clk(pcie_user_clk),
-    .rst(pcie_user_reset),
-    .in(sw),
-    .out(sw_int)
-);
 
 sync_signal #(
     .WIDTH(2),
@@ -1166,7 +1152,7 @@ core_inst (
     .btnd(1'b0),
     .btnr(1'b0),
     .btnc(1'b0),
-    .sw(sw_int),
+    .sw(8'd0),
     .led(led),
 
     /*
