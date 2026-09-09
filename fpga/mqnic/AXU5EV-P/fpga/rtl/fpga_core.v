@@ -119,7 +119,7 @@ module fpga_core #
     parameter RAM_PIPELINE = 2,
 
     // PCIe interface configuration
-    parameter AXIS_PCIE_DATA_WIDTH = 128,
+    parameter AXIS_PCIE_DATA_WIDTH = 64,
     parameter AXIS_PCIE_KEEP_WIDTH = (AXIS_PCIE_DATA_WIDTH/32),
     parameter AXIS_PCIE_RC_USER_WIDTH = AXIS_PCIE_DATA_WIDTH < 512 ? 75 : 161,
     parameter AXIS_PCIE_RQ_USER_WIDTH = AXIS_PCIE_DATA_WIDTH < 512 ? 62 : 137,
@@ -184,13 +184,7 @@ module fpga_core #
     /*
      * GPIO
      */
-    input  wire                               btnu,
-    input  wire                               btnl,
-    input  wire                               btnd,
-    input  wire                               btnr,
-    input  wire                               btnc,
-    input  wire [7:0]                         sw,
-    output wire [7:0]                         led,
+    output wire [0:0]                         led,
 
     /*
      * I2C
@@ -643,8 +637,7 @@ end
 
 endgenerate
 
-assign led[6:0] = 0;
-assign led[7] = ptp_pps_str;
+assign led[0] = ptp_pps_str;
 
 wire [PORT_COUNT-1:0]                         eth_tx_clk;
 wire [PORT_COUNT-1:0]                         eth_tx_rst;

@@ -19,11 +19,11 @@ create_clock -period 5.000 -name clk_200mhz -waveform {0.000 2.500} [get_ports c
 # TODO Si570
 
 # LEDs
-set_property PACKAGE_PIN AE15 [get_ports {leds_tri_o[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {leds_tri_o[0]}]
+set_property PACKAGE_PIN AE15 [get_ports {led[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led[0]}]
 
-set_false_path -to [get_ports {leds_tri_o[*]}]
-set_output_delay 0 [get_ports {leds_tri_o[*]}]
+set_false_path -to [get_ports {led[*]}]
+set_output_delay 0 [get_ports {led[*]}]
 
 # I2C interfaces
 # TODO

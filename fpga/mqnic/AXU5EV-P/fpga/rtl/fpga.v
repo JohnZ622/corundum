@@ -153,7 +153,7 @@ module fpga #
     /*
      * GPIO
      */
-    // output wire [7:0]   led,
+    output wire [0:0]   led,
 
     /*
      * I2C for board management
@@ -1148,13 +1148,7 @@ core_inst (
     /*
      * GPIO
      */
-    .btnu(1'b0),
-    .btnl(1'b0),
-    .btnd(1'b0),
-    .btnr(1'b0),
-    .btnc(1'b0),
-    .sw(8'd0),
-    .led(),
+    .led(led),
 
     /*
      * I2C
