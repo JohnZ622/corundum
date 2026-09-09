@@ -112,7 +112,7 @@ module fpga #
     parameter RAM_PIPELINE = 2,
 
     // PCIe interface configuration
-    parameter AXIS_PCIE_DATA_WIDTH = 128,
+    parameter AXIS_PCIE_DATA_WIDTH = 64,
     parameter PF_COUNT = 1,
     parameter VF_COUNT = 0,
 
