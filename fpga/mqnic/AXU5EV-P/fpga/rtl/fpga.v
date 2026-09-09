@@ -361,18 +361,19 @@ always @(posedge pcie_user_clk) begin
     i2c1_sda_t_reg <= i2c1_sda_t;
 end
 
-sync_signal #(
-    .WIDTH(2),
-    .N(2)
-)
-sync_signal_inst (
-    .clk(pcie_user_clk),
-    .in({i2c1_scl, i2c1_sda}),
-    .out({i2c1_scl_i, i2c1_sda_i})
-);
+// TODO: add i2c back
+// sync_signal #(
+//     .WIDTH(2),
+//     .N(2)
+// )
+// sync_signal_inst (
+//     .clk(pcie_user_clk),
+//     .in({i2c1_scl, i2c1_sda}),
+//     .out({i2c1_scl_i, i2c1_sda_i})
+// );
 
-assign i2c1_scl = i2c1_scl_t_reg ? 1'bz : i2c1_scl_o_reg;
-assign i2c1_sda = i2c1_sda_t_reg ? 1'bz : i2c1_sda_o_reg;
+// assign i2c1_scl = i2c1_scl_t_reg ? 1'bz : i2c1_scl_o_reg;
+// assign i2c1_sda = i2c1_sda_t_reg ? 1'bz : i2c1_sda_o_reg;
 
 // PCIe
 wire pcie_sys_clk;
@@ -1158,12 +1159,12 @@ core_inst (
     /*
      * I2C
      */
-    .i2c_scl_i(i2c1_scl_i),
-    .i2c_scl_o(i2c1_scl_o),
-    .i2c_scl_t(i2c1_scl_t),
-    .i2c_sda_i(i2c1_sda_i),
-    .i2c_sda_o(i2c1_sda_o),
-    .i2c_sda_t(i2c1_sda_t),
+    .i2c_scl_i(1'b1),
+    .i2c_scl_o(),
+    .i2c_scl_t(),
+    .i2c_sda_i(1'b1),
+    .i2c_sda_o(),
+    .i2c_sda_t(),
 
     /*
      * PCIe
@@ -1256,7 +1257,7 @@ core_inst (
     .sfp0_cfg_rx_prbs31_enable(sfp0_cfg_rx_prbs31_enable_int),
     .sfp0_rx_error_count(sfp0_rx_error_count_int),
     .sfp0_rx_status(sfp0_rx_status),
-    .sfp0_tx_disable_b(sfp0_tx_disable_b),
+    .sfp0_tx_disable_b(),
 
     .sfp1_tx_clk(sfp1_tx_clk_int),
     .sfp1_tx_rst(sfp1_tx_rst_int),
@@ -1270,7 +1271,7 @@ core_inst (
     .sfp1_cfg_rx_prbs31_enable(sfp1_cfg_rx_prbs31_enable_int),
     .sfp1_rx_error_count(sfp1_rx_error_count_int),
     .sfp1_rx_status(sfp1_rx_status),
-    .sfp1_tx_disable_b(sfp1_tx_disable_b),
+    .sfp1_tx_disable_b(),
 
     .sfp_drp_clk(sfp_drp_clk),
     .sfp_drp_rst(sfp_drp_rst),
