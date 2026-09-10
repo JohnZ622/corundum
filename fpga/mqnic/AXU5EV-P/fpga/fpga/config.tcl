@@ -247,6 +247,52 @@ dict set pcie_config "CONFIG.MSI_X_OPTIONS" {MSI-X_External}
 
 set_property -dict $pcie_config $pcie
 
+# -----------------------------------------------------------------------------
+# Confirm the intended top module survived hierarchy update.
+#
+# Vivado has two Verilog front ends.  synth_design is strict, but it only ever
+# compiles the compile order handed to it by the project hierarchy parser
+# (filemgmt), which runs at add_files/open time and is deliberately tolerant: a
+# file it cannot parse is dropped from the hierarchy rather than raising an
+# error.  That is reasonable on its own -- plenty of sources do not parse
+# standalone -- but the recovery removes the file from the set the strict parser
+# would have rejected, so a syntax error can erase its own evidence.
+#
+# When rtl/fpga.v is the file that gets dropped, "fpga" is no longer a valid
+# top.  Under source_mgmt_mode "All" (the default, and what this flow relies on)
+# Vivado substitutes the largest remaining candidate, fpga_core, announcing it
+# only as CRITICAL WARNING [filemgmt 20-742] -- once, at project creation, in a
+# vivado.mk step that runs with -nolog.  Synthesis then succeeds, because
+# fpga_core alone is perfectly valid.  What is silently gone is everything
+# fpga.v instantiates: the PCIe core, the GT wizard, the SFP quad, and with them
+# the GTHE4_COMMON that qpll1_pcie.tcl's hook patches for QPLL1.  The first
+# visible symptom is that hook failing during implementation, an hour in.
+#
+# -----------------------------------------------------------------------------
+
+set expected_top "fpga"
+
+update_compile_order -fileset sources_1
+
+set actual_top [get_property top [get_filesets sources_1]]
+set top_auto [get_property top_auto_set [get_filesets sources_1]]
+
+if {$actual_top ne $expected_top} {
+    set msg "config.tcl: top module is '$actual_top', expected '$expected_top'"
+    append msg " (TOP_AUTO_SET=$top_auto)."
+    append msg "  Vivado refused the requested top and auto-selected a replacement;"
+    append msg " look for CRITICAL WARNING \[filemgmt 20-742\] in the output of the"
+    append msg " step that created the project.  The usual cause is a parse error in"
+    append msg " rtl/fpga.v, which the hierarchy parser drops instead of failing on."
+    append msg "  Check it with 'iverilog -t null -o /dev/null rtl/fpga.v', fix the"
+    append msg " file, then rebuild the project from scratch: 'make tmpclean && make'."
+    append msg "  Re-running make alone is not enough -- the substituted top is"
+    append msg " already recorded in fpga.xpr."
+    error $msg
+}
+
+puts "config.tcl: top module is '$actual_top' (TOP_AUTO_SET=$top_auto)"
+
 # apply parameters to top-level
 set param_list {}
 dict for {name value} $params {
