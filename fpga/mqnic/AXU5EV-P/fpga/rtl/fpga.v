@@ -184,7 +184,7 @@ module fpga #
     output wire         sfp1_tx_p,
     output wire         sfp1_tx_n,
     input  wire         sfp_mgt_refclk_0_p,
-    input  wire         sfp_mgt_refclk_0_n,
+    input  wire         sfp_mgt_refclk_0_n
     //output wire         sfp0_tx_disable_b,
     //output wire         sfp1_tx_disable_b,
 
@@ -892,6 +892,9 @@ generate
 
 if (DDR_ENABLE && DDR_CH > 0) begin
 
+/* DDR4 not implemented on this board: the ddr4_* top-level ports and the
+ * Si570 user clock are commented out in the port list and in fpga.xdc. */
+/*
 reg ddr4_rst_reg = 1'b1;
 
 always @(posedge pcie_user_clk or posedge pcie_user_reset) begin
@@ -969,9 +972,13 @@ ddr4_0 ddr4_inst (
     .c0_ddr4_s_axi_rid(m_axi_ddr_rid[0*AXI_DDR_ID_WIDTH +: AXI_DDR_ID_WIDTH]),
     .c0_ddr4_s_axi_rdata(m_axi_ddr_rdata[0*AXI_DDR_DATA_WIDTH +: AXI_DDR_DATA_WIDTH])
 );
+*/
 
 end else begin
 
+/* DDR4 not implemented on this board: the ddr4_* top-level ports and the
+ * Si570 user clock are commented out in the port list and in fpga.xdc. */
+/*
 assign ddr4_adr = {17{1'bz}};
 assign ddr4_ba = {2{1'bz}};
 assign ddr4_bg = {1{1'bz}};
@@ -991,6 +998,7 @@ OBUFTDS ddr4_ck_obuftds_inst (
     .O(ddr4_ck_t),
     .OB(ddr4_ck_c)
 );
+*/
 
 assign ddr_clk = 0;
 assign ddr_rst = 0;
