@@ -1,12 +1,12 @@
-# XDC constraints for the Xilinx ZCU106 board
-# part: xczu7ev-ffvc1156-2-e
+# XDC constraints for the Alinx AXU5EV-P board
+# part: xczu5ev-sfvc784-2-i
 
 # General configuration
 set_property BITSTREAM.GENERAL.COMPRESS true           [current_design]
 
 # Fan
-set_property PACKAGE_PIN AG14 [get_ports {fan_tri_o[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {fan_tri_o[0]}]
+# set_property PACKAGE_PIN AG14 [get_ports {fan_tri_o[0]}]
+# set_property IOSTANDARD LVCMOS33 [get_ports {fan_tri_o[0]}]
 
 # System clocks
 # 200 MHz
