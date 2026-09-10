@@ -7,11 +7,45 @@ set preset {GTH-10GBASE-R}
 
 set freerun_freq {125}
 set line_rate {10.3125}
-set refclk_freq {156.25}
-set sec_line_rate {0}
-set sec_refclk_freq $refclk_freq
-set qpll_fracn [expr {int(fmod($line_rate*1000/2 / $refclk_freq, 1)*pow(2, 24))}]
-set sec_qpll_fracn [expr {int(fmod($sec_line_rate*1000/2 / $sec_refclk_freq, 1)*pow(2, 24))}]
+# Board oscillator G1 is 125.000 MHz.  10.3125 Gb/s needs QPLL N = 82.5, which
+# is reachable only via fractional-N -- see the fracn arithmetic below.
+set refclk_freq {125}
+# Secondary QPLL (QPLL1) is not for Ethernet: it is handed to the PCIe hard
+# block, which runs Gen3 (8.0 Gb/s) off the 100 MHz refclk from the card edge.
+# With CONFIG.gtcom_in_core 0 the PCIe core has no DRP path to this COMMON, so
+# QPLL1 must be configured here at build time.
+#
+# WHY THIS WAY ROUND (Ethernet on QPLL0, PCIe on QPLL1) -- it is not arbitrary.
+# The two QPLLs have different VCO ranges on UltraScale+ GTH:
+#     QPLL0  9.8 - 16.375 GHz
+#     QPLL1  8.0 - 13.0   GHz
+# Ethernet is indifferent: 10.3125 Gb/s wants a 10.3125 GHz VCO, comfortably
+# inside both.  PCIe is not.  Gen3 wants an 8.0 GHz VCO, which is inside QPLL1's
+# native range but BELOW QPLL0's 9.8 GHz floor, so on QPLL0 it can only be
+# reached through the lower-band VCO path (QPLL_CFG2_G3 bit [6]).
+#
+# The wizard CANNOT fully configure QPLL1 for PCIe -- it derives one FBDIV and
+# mirrors it into FBDIV_G3 (80/80), leaves QPLL1_PCI_EN at 1'b0 and
+# QPLL1_RATE_SW_USE_DRP at 1'b1, and exposes no PCIe knobs for a secondary
+# QPLL.  (CONFIG.PCIE_ENABLE does not help: it applies PCIe mode to the PRIMARY
+# QPLL, clobbering QPLL0_FBDIV from 82 to 80 and breaking the 10G link.)
+# Those attributes are patched onto the netlist instead -- see
+# fpga/qpll1_pcie_attrs.tcl.  What this setting IS load-bearing for is the
+# reference clock: it makes the wizard wire GTREFCLK01 to QPLL1 and set
+# QPLL1REFCLKSEL to 3'b001, which the netlist patch does not do.
+set sec_line_rate {8.0}
+set sec_refclk_freq {100}
+# QPLL fractional-N.  The wizard's convention is N = N_int + FRACN/2**24 where
+# N = VCO/refclk and the VCO runs at the line rate, i.e. N = line_rate*1000/refclk.
+# Upstream Corundum divides by 2 here, which yields half the correct numerator;
+# that bug is invisible on every upstream board because they all use integer-N
+# refclks (156.25 -> 0 either way).  It is NOT invisible at 125 MHz: N = 82.5
+# needs 0.5*2**24 = 8388608, not the 4194304 the upstream expression produces.
+# Verified against gtwizard_ultrascale on xczu5ev-sfvc784-2-i, Vivado 2022.2:
+# refclk 125 is accepted with 8388608 and rejected with 0/2097152/4194304/
+# 12582912/16777215.  The wizard validates refclk and numerator as a pair.
+set qpll_fracn [expr {int(fmod($line_rate*1000 / $refclk_freq, 1)*pow(2, 24))}]
+set sec_qpll_fracn [expr {int(fmod($sec_line_rate*1000 / $sec_refclk_freq, 1)*pow(2, 24))}]
 set user_data_width {64}
 set int_data_width {32}
 set rx_eq_mode {DFE}

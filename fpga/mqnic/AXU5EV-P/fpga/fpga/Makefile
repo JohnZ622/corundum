@@ -149,6 +149,7 @@ IP_TCL_FILES += ip/eth_xcvr_gth.tcl
 
 # Configuration
 CONFIG_TCL_FILES = ./config.tcl
+CONFIG_TCL_FILES += ./qpll1_pcie.tcl
 
 include ../common/vivado.mk
 

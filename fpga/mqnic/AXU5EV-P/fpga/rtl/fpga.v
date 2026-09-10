@@ -390,6 +390,17 @@ ibufds_gte4_pcie_mgt_refclk_inst (
     .ODIV2         (pcie_sys_clk)
 );
 
+// Shared GTHE4_COMMON (quad 224).  The Ethernet quad wrapper instantiates the
+// COMMON; the PCIe core is built with CONFIG.gtcom_in_core 0 and consumes QPLL1
+// from it.  QPLL0 stays with the SFP channels -- at Gen3 the PCIe core hardwires
+// qpll0pd high, so it never contends for it.
+wire [2:0] pcie_qpll_pcierate;
+wire       pcie_qpll1_pd;
+wire       pcie_qpll1_reset;
+wire       pcie_qpll1_lock;
+wire       pcie_qpll1_clk;
+wire       pcie_qpll1_refclk;
+
 wire [AXIS_PCIE_DATA_WIDTH-1:0]    axis_rq_tdata;
 wire [AXIS_PCIE_KEEP_WIDTH-1:0]    axis_rq_tkeep;
 wire                               axis_rq_tlast;
@@ -633,6 +644,25 @@ pcie4_uscale_plus_inst (
     .cfg_ds_bus_number(8'd0),
     .cfg_ds_device_number(5'd0),
 
+    // External GT COMMON (CONFIG.gtcom_in_core 0).  Mind the naming: the
+    // *_out ports are named from the COMMON's point of view and are INPUTS
+    // here; everything else in this group is an output of the core.
+    //
+    .ext_qpllxrefclk(), // this is same as sys_clk_gt, but the quad wrapper already has it, so leave unconnected
+    .ext_qpllxrcalenb(),
+    .ext_qpllxrate(pcie_qpll_pcierate), // the PIPE rate (000 Gen1 / 001 Gen2 / 010 Gen3) driving PCIERATEQPLL1 (it does link training); 
+    // The QPLL0 group is unused because QPLL0 belongs to the SFP channels 
+    .ext_qpll0pd(), 
+    .ext_qpll0reset(),
+    .ext_qpll0lock_out(1'b0),
+    .ext_qpll0outclk_out(1'b0),
+    .ext_qpll0outrefclk_out(1'b0),
+    .ext_qpll1pd(pcie_qpll1_pd),
+    .ext_qpll1reset(pcie_qpll1_reset),
+    .ext_qpll1lock_out(pcie_qpll1_lock),
+    .ext_qpll1outclk_out(pcie_qpll1_clk),
+    .ext_qpll1outrefclk_out(pcie_qpll1_refclk),
+
     .sys_clk(pcie_sys_clk),
     .sys_clk_gt(pcie_sys_clk_gt),
     .sys_reset(pcie_reset_n),
@@ -717,7 +747,11 @@ sfp_sync_reset_inst (
 eth_xcvr_phy_10g_gty_quad_wrapper #(
     .COUNT(2),
     .GT_GTH(1),
-    .PRBS31_ENABLE(1)
+    .PRBS31_ENABLE(1),
+    // QPLL0 drives the SFP channels; QPLL1 is powered up but handed to the
+    // PCIe core, which owns its powerdown, reset and rate control.
+    .QPLL1_PD(1'b0),
+    .QPLL1_EXT_CTRL(1)
 )
 sfp_phy_quad_inst (
     .xcvr_ctrl_clk(clk_125mhz_int),
@@ -734,13 +768,13 @@ sfp_phy_quad_inst (
     .xcvr_qpll0lock_out(),
     .xcvr_qpll0clk_out(),
     .xcvr_qpll0refclk_out(),
-    .xcvr_gtrefclk01_in(sfp_mgt_refclk_0),
-    .xcvr_qpll1pd_in(1'b0),
-    .xcvr_qpll1reset_in(1'b0),
-    .xcvr_qpll1pcierate_in(3'd0),
-    .xcvr_qpll1lock_out(),
-    .xcvr_qpll1clk_out(),
-    .xcvr_qpll1refclk_out(),
+    .xcvr_gtrefclk01_in(pcie_sys_clk_gt),
+    .xcvr_qpll1pd_in(pcie_qpll1_pd),
+    .xcvr_qpll1reset_in(pcie_qpll1_reset),
+    .xcvr_qpll1pcierate_in(pcie_qpll_pcierate),
+    .xcvr_qpll1lock_out(pcie_qpll1_lock),
+    .xcvr_qpll1clk_out(pcie_qpll1_clk),
+    .xcvr_qpll1refclk_out(pcie_qpll1_refclk),
 
     /*
      * DRP
