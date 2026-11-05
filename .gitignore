@@ -22,3 +22,21 @@ modules.order
 *.str
 
 tags
+
+.venv
+
+**/sim_build
+**/fpga.cache
+**/fpga.gen
+**/fpga.hw
+**/fpga.runs
+**/fpga.srcs
+**/*.bit
+**/*.bin
+**/fpga.xpr
+**/*.xsa
+**/*.rpt
+**/create_project.tcl
+**/generate_bit.tcl
+**/run_impl.tcl
+**/run_synth.tcl
